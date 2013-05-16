@@ -5,7 +5,6 @@ from git import *
 import ConfigParser
 import threading, time
 import sys
-from PIL import Image, ImageTk
 
 class Application(tk.Frame):              
     
@@ -51,8 +50,7 @@ class Application(tk.Frame):
 	  self.update_stop.wait(self.refresh_rate)
 	pass
     
-    def createWidgets(self):
-        
+    def createWidgets(self):    
         self.controlVarGDtot=tk.IntVar()
         self.controlVarDelta=tk.IntVar()
         self.controlVarState=tk.StringVar()
@@ -75,31 +73,13 @@ class Application(tk.Frame):
         
         self.quitButton = tk.Button(self, text='Quit', command=self.quitAction)            
         self.quitButton.grid(sticky='WE',columnspan=2,padx=5,pady=5)
-              
-        
+                   
     def quitAction(self):
       self.update_stop.set()
       if self.thread.isAlive():
 	self.thread.join()
       self.master.quit()
-      
-    def commitAction(self):
-      g = Git(self.my_repo)
-      g.init()
-      try:
-	g.commit("--all", "--message=auto")
-      except:
-	instance = sys.exc_info()[1]
-      pass
-      
-    def pullAction(self):
-      g = Git(self.my_repo)
-      g.init()
-      g.pull()
-      for repo in self.friends_repo:
-	g.pull(repo)
-      pass
-  
+
     def calculateGDtot(self):
 	H1=self.git.log(self.my_branch,format="oneline")
 	if (H1 != ""):
@@ -113,7 +93,7 @@ class Application(tk.Frame):
 	      Hi=set(log.split('\n'))
 	  sumHi=sumHi+len(Hi)
 	  Hmax=Hmax|Hi
-		
+	
 	self.controlVarGDtot.set((len(self.friends_branch)+1)*len(Hmax)-sumHi)
 	self.controlVarDelta.set(len(Hmax)-len(H1))
 	
