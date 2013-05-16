@@ -21,6 +21,8 @@ class Application(tk.Frame):
 	config = ConfigParser.RawConfigParser()
 	config.read('diva.cfg')
 	self.my_repo=config.get("git","my_repo")
+	self.my_branch=config.get("git","my_branch")
+	
 	self.friends_repo=config.get("git","friends_repo")
 	self.friends_repo=self.friends_repo.split(" ")
 	
@@ -29,10 +31,6 @@ class Application(tk.Frame):
 	
 	self.refresh_rate=int(config.get("git","refresh_rate"))
 	self.sync_limit=int(config.get("git","sync_limit"))
-	
-	print(self.my_repo)
-	for repo in self.friends_repo:
-	  print(repo)
       
     def init_git(self):
 	repo = Repo(self.my_repo, odbt=GitDB)
@@ -41,7 +39,16 @@ class Application(tk.Frame):
 	
     def run_thread(self):
 	self.update_stop=threading.Event()
-	threading.Thread(target=self.threadUpdateRepo).start()
+	self.thread=threading.Thread(target=self.threadUpdateRepo)
+	self.thread.start()
+	
+    def threadUpdateRepo(self):
+	while(not self.update_stop.is_set()):
+	  self.git.remote("update")
+	  #self.calculateDelta()
+	  self.calculateGDtot()
+	  self.update_stop.wait(self.refresh_rate)
+	pass
     
     def createWidgets(self):
         self.frame1 = tk.LabelFrame(self,text="Detailed information:")
@@ -71,9 +78,8 @@ class Application(tk.Frame):
 
         self.progress_barDelta = Progressbar(self.frame2,orient=tk.HORIZONTAL,mode='determinate',variable=self.controlVarDelta)
 	
-	#self.progress_barDelta =ProgressBarView.ProgressBarView(self.frame2,background='blue',fillColor='white')
-        self.progress_barDelta.grid(column=0,row=3,columnspan=2,sticky='WE',padx=5,pady=2)
-      
+	self.progress_barDelta.grid(column=0,row=3,columnspan=2,sticky='WE',padx=5,pady=2)
+ 
         self.frame3= tk.LabelFrame(self,text="Commands:")
         self.frame3.grid(row=2,column=7,columnspan=2,sticky='WEN', padx=5, pady=5, ipadx=5, ipady=5)
         
@@ -89,6 +95,8 @@ class Application(tk.Frame):
         
     def quitAction(self):
       self.update_stop.set()
+      if self.thread.isAlive():
+	self.thread.join()
       self.master.quit()
       
     def commitAction(self):
@@ -146,7 +154,7 @@ class Application(tk.Frame):
 textRM2 + "\t3/2= " + textRM3)
 
     def calculateGDtot(self):
-	H1=self.git.log("master",format="oneline")
+	H1=self.git.log(self.my_branch,format="oneline")
 	if (H1 != ""):
 	    H1=set(H1.split('\n'))
 	textH1= str(len(H1))
@@ -166,7 +174,7 @@ textRM2 + "\t3/2= " + textRM3)
 	self.onLogMessage("H1= "+textH1 + textHi+ "\tHmax= " + textHmax)
 	self.controlVarGDtot.set((len(self.friends_branch)+1)*len(Hmax)-sumHi)
 	self.controlVarDelta.set(len(Hmax)-len(H1))
-	self.progress_barDelta.updateProgress(len(Hmax)-len(H1), len(Hmax))
+	
 	if ((len(Hmax)-len(H1)) < self.sync_limit):
 	  self.DeltaLabel.setvar(name='background', value='green')
 	  self.DeltaLabel.setvar(name='fg', value='green')
@@ -182,13 +190,6 @@ textRM2 + "\t3/2= " + textRM3)
 	w.configure(state=tk.DISABLED)
 	pass
       
-    def threadUpdateRepo(self):
-	while(not self.update_stop.is_set()):
-	  self.git.remote("update")
-	  #self.calculateDelta()
-	  self.calculateGDtot()
-	  self.update_stop.wait(self.refresh_rate)
-	pass
       
 app = Application()                       
 app.master.title('Divergence Awareness Widget')
