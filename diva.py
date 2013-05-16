@@ -5,6 +5,7 @@ from git import *
 import ConfigParser
 import threading, time
 import sys
+from PIL import Image, ImageTk
 
 class Application(tk.Frame):              
     
@@ -130,4 +131,5 @@ Xpos=str(screen_width-120)
 app.master.title('diva')
 app.master.geometry('115x130+'+Xpos+'+50')
 app.master.overrideredirect(app.always_ontop)
+app.master.wm_iconbitmap(bitmap = "@diva.xbm")
 app.mainloop()
