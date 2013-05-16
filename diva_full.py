@@ -16,6 +16,7 @@ class Application(tk.Frame):
         self.run_thread()
         self.grid()
         self.createWidgets()
+        self.master.protocol("WM_DELETE_WINDOW", self.quitAction)
     
     def read_conf(self):
 	config = ConfigParser.RawConfigParser()
@@ -80,11 +81,11 @@ class Application(tk.Frame):
         #self.progress_barDelta = Progressbar(self.frame2,orient=tk.HORIZONTAL,mode='determinate',variable=self.controlVarDelta)
 	#self.progress_barDelta.grid(column=0,row=3,columnspan=2,sticky='WE',padx=5,pady=2)
  
-	self.Label3 = tk.Label(self.frame2, text="State: ")
-        self.Label3.grid(column=0,row=3,sticky='WE',padx=2,pady=2)
+	#self.Label3 = tk.Label(self.frame2, text="State: ")
+        #self.Label3.grid(column=0,row=3,sticky='WE',padx=2,pady=2)
         
         self.StateLabel = tk.Label(self.frame2, textvariable=self.controlVarState)
-        self.StateLabel.grid(column=1,row=3,sticky='W',padx=2,pady=2)
+        self.StateLabel.grid(column=0,row=3,columnspan=2,sticky='WE',padx=2,pady=2)
         
         self.frame3= tk.LabelFrame(self,text="Commands:")
         self.frame3.grid(row=2,column=7,columnspan=2,sticky='WEN', padx=5, pady=5, ipadx=5, ipady=5)
