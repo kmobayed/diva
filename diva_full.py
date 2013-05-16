@@ -59,27 +59,33 @@ class Application(tk.Frame):
         
         self.controlVarGDtot=tk.IntVar()
         self.controlVarDelta=tk.IntVar()
+        self.controlVarState=tk.StringVar()
 
 	self.frame2 = tk.LabelFrame(self)
         self.frame2.grid(row=0,column=7,columnspan=2,rowspan=4, sticky='WEN', padx=5, pady=5, ipadx=5, ipady=5)
     
 	self.Label1 = tk.Label(self.frame2, text="GDtot=")
-        self.Label1.grid(column=0,row=0,sticky='E',padx=2,pady=2)
+        self.Label1.grid(column=0,row=0,sticky='WE',padx=2,pady=2)
 	self.GDtotLabel = tk.Label(self.frame2, textvariable=self.controlVarGDtot)
         self.GDtotLabel.grid(column=1,row=0,sticky='W',padx=2,pady=2)
 
         self.progress_barGDtot = Progressbar(self.frame2,orient=tk.HORIZONTAL,mode='determinate',variable=self.controlVarGDtot)
         self.progress_barGDtot.grid(column=0,row=1,columnspan=2,sticky='WE',padx=5,pady=2)
         
-        self.Label2 = tk.Label(self.frame2, text="Delta=")
-        self.Label2.grid(column=0,row=2,sticky='E',padx=2,pady=2)
+        self.Label2 = tk.Label(self.frame2, text="Distance=")
+        self.Label2.grid(column=0,row=2,sticky='WE',padx=2,pady=2)
         self.DeltaLabel = tk.Label(self.frame2, textvariable=self.controlVarDelta)
         self.DeltaLabel.grid(column=1,row=2,sticky='W',padx=2,pady=2)
 
-        self.progress_barDelta = Progressbar(self.frame2,orient=tk.HORIZONTAL,mode='determinate',variable=self.controlVarDelta)
-	
-	self.progress_barDelta.grid(column=0,row=3,columnspan=2,sticky='WE',padx=5,pady=2)
+        #self.progress_barDelta = Progressbar(self.frame2,orient=tk.HORIZONTAL,mode='determinate',variable=self.controlVarDelta)
+	#self.progress_barDelta.grid(column=0,row=3,columnspan=2,sticky='WE',padx=5,pady=2)
  
+	self.Label3 = tk.Label(self.frame2, text="State: ")
+        self.Label3.grid(column=0,row=3,sticky='WE',padx=2,pady=2)
+        
+        self.StateLabel = tk.Label(self.frame2, textvariable=self.controlVarState)
+        self.StateLabel.grid(column=1,row=3,sticky='W',padx=2,pady=2)
+        
         self.frame3= tk.LabelFrame(self,text="Commands:")
         self.frame3.grid(row=2,column=7,columnspan=2,sticky='WEN', padx=5, pady=5, ipadx=5, ipady=5)
         
@@ -100,15 +106,12 @@ class Application(tk.Frame):
       self.master.quit()
       
     def commitAction(self):
-      #should set bare=true
       g = Git(self.my_repo)
       g.init()
       try:
 	g.commit("--all", "--message=auto")
       except:
 	instance = sys.exc_info()[1]
-      #g.push(self.friend1_repo,"master")
-      #g.push(self.friend2_repo,"master")
       pass
       
     def pullAction(self):
@@ -176,11 +179,12 @@ textRM2 + "\t3/2= " + textRM3)
 	self.controlVarDelta.set(len(Hmax)-len(H1))
 	
 	if ((len(Hmax)-len(H1)) < self.sync_limit):
-	  self.DeltaLabel.setvar(name='background', value='green')
-	  self.DeltaLabel.setvar(name='fg', value='green')
+	  self.StateLabel.config(foreground='green')
+	  self.controlVarState.set("OK")
 	else:
-	  self.DeltaLabel.set(background='red')
-	
+	  self.StateLabel.config(foreground='red')
+	  self.controlVarState.set("ATTENTION")
+	  
     def onLogMessage(self, text):
 	w = self.logwnd
 	w.configure(state=tk.NORMAL)
