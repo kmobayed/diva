@@ -46,7 +46,6 @@ class Application(tk.Frame):
     def threadUpdateRepo(self):
 	while(not self.update_stop.is_set()):
 	  self.git.remote("update")
-	  #self.calculateDelta()
 	  self.calculateGDtot()
 	  self.update_stop.wait(self.refresh_rate)
 	pass
