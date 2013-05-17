@@ -1,0 +1,10 @@
+
+Install:
+- Python 2.7 with tcl/tk support (included in last version of Python)
+- Python setuptools (https://pypi.python.org/pypi/setuptools)
+- gitPython (http://pythonhosted.org/GitPython/0.3.2/index.html)
+
+Configure repositories.
+
+Add friends branches to your local repository:
+$ git remote add friend2 /Users/hala/project3

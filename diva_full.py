@@ -30,8 +30,8 @@ class Application(tk.Frame):
 	self.friends_branch=config.get("git","friends_branch")
 	self.friends_branch=self.friends_branch.split(" ")
 	
-	self.refresh_rate=int(config.get("git","refresh_rate"))
-	self.sync_limit=int(config.get("git","sync_limit"))
+	self.refresh_rate=int(config.get("diva","refresh_rate"))
+	self.sync_limit=int(config.get("diva","sync_limit"))
       
     def init_git(self):
 	repo = Repo(self.my_repo, odbt=GitDB)
